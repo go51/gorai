@@ -1,0 +1,10 @@
+{
+  "framework": {
+    "web_server": {
+      "host": "",
+      "port": "8080",
+      "read_timeout": 30,
+      "write_timeout": 60
+    }
+  }
+}
