@@ -6,7 +6,9 @@ import (
 	"fmt"
 )
 
-type gorai struct {}
+type gorai struct {
+	config *Config
+}
 
 var goraiInstance *gorai = nil
 
@@ -17,15 +19,21 @@ func Load() *gorai {
 
 	goraiInstance = &gorai{}
 
+	goraiInstance.initialize()
+
 	return goraiInstance
+}
+
+func (g *gorai) initialize() {
+	g.config = loadConfig()
 }
 
 func (g *gorai) Run() {
 	server := &http.Server{
-		Addr: ":8080",
+		Addr: g.config.Framework.WebServer.Host + ":" + g.config.Framework.WebServer.Port,
 		Handler: webHandler(),
-		ReadTimeout: 30 * time.Second,
-		WriteTimeout: 60 * time.Second,
+		ReadTimeout: g.config.Framework.WebServer.ReadTimeout * time.Second,
+		WriteTimeout: g.config.Framework.WebServer.WriteTimeout * time.Second,
 	}
 	gracehttp.Serve(server)
 }
@@ -40,4 +48,8 @@ func webHandler() http.Handler {
 
 func rootFunc(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, "Hello, Gorai!")
+}
+
+func (g *gorai) Config() *Config {
+	return g.config
 }
