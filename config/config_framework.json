@@ -5,6 +5,29 @@
       "port": "8080",
       "read_timeout": 30,
       "write_timeout": 60
+    },
+    "system_log": {
+      "debug": {
+        "each_time": true,
+        "cache": false
+      },
+      "information": {
+        "each_time": true,
+        "cache": false
+      },
+      "warning": {
+        "each_time": true,
+        "cache": false
+      },
+      "error": {
+        "each_time": true,
+        "cache": false
+      },
+      "critical": {
+        "each_time": true,
+        "cache": false
+      },
+      "path": "/var/log/gorai/gorai_framework.log"
     }
   }
 }

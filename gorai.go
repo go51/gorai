@@ -1,13 +1,16 @@
 package gorai
+
 import (
+	"fmt"
+	"github.com/facebookgo/grace/gracehttp"
+	"github.com/go51/log551"
 	"net/http"
 	"time"
-	"github.com/facebookgo/grace/gracehttp"
-	"fmt"
 )
 
 type gorai struct {
 	config *Config
+	logger *log551.Log551
 }
 
 var goraiInstance *gorai = nil
@@ -25,17 +28,28 @@ func Load() *gorai {
 }
 
 func (g *gorai) initialize() {
+	// load config
 	g.config = loadConfig()
+
+	g.logger = log551.New(&g.config.Framework.SystemLog)
+	g.logger.Open()
+	defer g.logger.Close()
+
+	g.logger.Information("--[ initialize gorai - START ]--")
+	g.logger.Information("Success! [Log551]")
+	g.logger.Information("--[ initialize gorai - END   ]--")
 }
 
 func (g *gorai) Run() {
 	server := &http.Server{
-		Addr: g.config.Framework.WebServer.Host + ":" + g.config.Framework.WebServer.Port,
-		Handler: webHandler(),
-		ReadTimeout: g.config.Framework.WebServer.ReadTimeout * time.Second,
+		Addr:         g.config.Framework.WebServer.Host + ":" + g.config.Framework.WebServer.Port,
+		Handler:      webHandler(),
+		ReadTimeout:  g.config.Framework.WebServer.ReadTimeout * time.Second,
 		WriteTimeout: g.config.Framework.WebServer.WriteTimeout * time.Second,
 	}
 	gracehttp.Serve(server)
+
+	g.logger.Close()
 }
 
 func webHandler() http.Handler {
@@ -52,4 +66,8 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 
 func (g *gorai) Config() *Config {
 	return g.config
+}
+
+func (g *gorai) Logger() *log551.Log551 {
+	return g.logger
 }

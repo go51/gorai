@@ -1,22 +1,25 @@
 package gorai
+
 import (
 	"encoding/json"
-	"os"
+	"github.com/go51/log551"
 	"io/ioutil"
+	"os"
 	"time"
 )
 
 type Config struct {
-	Framework   ConfigFramework `json:"framework"`
+	Framework ConfigFramework `json:"framework"`
 }
 
 type ConfigFramework struct {
 	WebServer ConfigWebServer `json:"web_server"`
+	SystemLog log551.Config   `json:"system_log"`
 }
 
 type ConfigWebServer struct {
-	Host         string `json:"host"`
-	Port         string `json:"port"`
+	Host         string        `json:"host"`
+	Port         string        `json:"port"`
 	ReadTimeout  time.Duration `json:"read_timeout"`
 	WriteTimeout time.Duration `json:"write_timeout"`
 }
