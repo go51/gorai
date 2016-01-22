@@ -28,6 +28,9 @@
         "cache": false
       },
       "path": "/var/log/gorai/gorai_framework.log"
+    },
+    "session": {
+      "cookie_key_name": "GORAISID"
     }
   }
 }
