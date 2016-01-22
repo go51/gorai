@@ -15,6 +15,7 @@ type Config struct {
 type ConfigFramework struct {
 	WebServer ConfigWebServer `json:"web_server"`
 	SystemLog log551.Config   `json:"system_log"`
+	Session   ConfigSession   `json:"session"`
 }
 
 type ConfigWebServer struct {
@@ -22,6 +23,10 @@ type ConfigWebServer struct {
 	Port         string        `json:"port"`
 	ReadTimeout  time.Duration `json:"read_timeout"`
 	WriteTimeout time.Duration `json:"write_timeout"`
+}
+
+type ConfigSession struct {
+	CookieKeyName string `json:"cookie_key_name"`
 }
 
 var configInstance *Config
