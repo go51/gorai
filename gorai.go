@@ -90,6 +90,10 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		l.Debugf("%s Path: %s", sidShort, r.URL.Path)
 		l.Debugf("%s Neme: %s", sidShort, route.Name())
 		c := container551.New()
+		c.SetSID(sid)
+		c.SetResponseWriter(w)
+		c.SetRequest(r)
+		c.SetLogger(l)
 
 		action := route.Action()
 		data = action(c)
