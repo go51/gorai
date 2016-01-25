@@ -1,8 +1,9 @@
 package gorai_test
+
 import (
-	"testing"
 	"github.com/go51/gorai"
 	"os"
+	"testing"
 )
 
 func TestMain(m *testing.M) {
@@ -64,7 +65,7 @@ func BenchmarkLoad(b *testing.B) {
 }
 
 func TestRun(t *testing.T) {
-	t.SkipNow()
+	//	t.SkipNow()
 	g := gorai.Load()
 	g.Run()
 }

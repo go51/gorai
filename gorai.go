@@ -3,6 +3,7 @@ package gorai
 import (
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/go51/container551"
+	"github.com/go51/cookie551"
 	"github.com/go51/log551"
 	"github.com/go51/response551"
 	"github.com/go51/router551"
@@ -78,7 +79,9 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 	l.Open()
 	defer l.Close()
 
-	sid := g.sid(w, r)
+	cookie := cookie551.New(w, r)
+
+	sid := g.sid(cookie)
 	sidShort := sid[:10]
 	l.Debugf("%s SID: %s", sidShort, sid)
 
@@ -94,6 +97,8 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		c.SetResponseWriter(w)
 		c.SetRequest(r)
 		c.SetLogger(l)
+		c.SetLogger(l)
+		c.SetCookie(cookie)
 
 		action := route.Action()
 		data = action(c)
@@ -120,23 +125,15 @@ func (g *gorai) Router() *router551.Router {
 	return g.router
 }
 
-func (g *gorai) sid(w http.ResponseWriter, r *http.Request) string {
-	cookie, _ := r.Cookie(g.config.Framework.Session.CookieKeyName)
-	if cookie != nil {
-		return cookie.String()
+func (g *gorai) sid(cookie *cookie551.Cookie) string {
+	sid, err := cookie.Get(g.config.Framework.Session.CookieKeyName)
+	if err == nil {
+		return sid
 	}
 
-	sid := secure551.Hash()
-	expire := time.Now().AddDate(1, 0, 0)
-	setCookie := http.Cookie{
-		Name:     "GOSID",
-		Value:    sid,
-		Expires:  expire,
-		HttpOnly: true,
-		Raw:      sid,
-	}
+	sid = secure551.Hash()
 
-	http.SetCookie(w, &setCookie)
+	cookie.Set(g.config.Framework.Session.CookieKeyName, sid, 60*60*24*365)
 
 	return sid
 
