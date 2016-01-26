@@ -31,6 +31,12 @@
     },
     "session": {
       "cookie_key_name": "GORAISID"
+    },
+    "database": {
+      "host": "tcp(localhost:3306)",
+      "user": "root",
+      "password": "",
+      "database": "gorai"
     }
   }
 }
