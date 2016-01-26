@@ -5,6 +5,7 @@ import (
 	"github.com/go51/container551"
 	"github.com/go51/cookie551"
 	"github.com/go51/log551"
+	"github.com/go51/mysql551"
 	"github.com/go51/response551"
 	"github.com/go51/router551"
 	"github.com/go51/secure551"
@@ -79,6 +80,8 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 	l.Open()
 	defer l.Close()
 
+	mysql := mysql551.New(&g.config.Framework.Database)
+
 	cookie := cookie551.New(w, r)
 
 	sid := g.sid(cookie)
@@ -99,6 +102,7 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		c.SetLogger(l)
 		c.SetLogger(l)
 		c.SetCookie(cookie)
+		c.SetDb(mysql)
 
 		action := route.Action()
 		data = action(c)

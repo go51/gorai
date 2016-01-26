@@ -3,6 +3,7 @@ package gorai
 import (
 	"encoding/json"
 	"github.com/go51/log551"
+	"github.com/go51/mysql551"
 	"io/ioutil"
 	"os"
 	"time"
@@ -16,6 +17,7 @@ type ConfigFramework struct {
 	WebServer ConfigWebServer `json:"web_server"`
 	SystemLog log551.Config   `json:"system_log"`
 	Session   ConfigSession   `json:"session"`
+	Database  mysql551.Config `json:"database"`
 }
 
 type ConfigWebServer struct {
