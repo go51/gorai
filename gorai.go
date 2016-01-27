@@ -5,6 +5,7 @@ import (
 	"github.com/go51/container551"
 	"github.com/go51/cookie551"
 	"github.com/go51/log551"
+	"github.com/go51/memcache551"
 	"github.com/go51/mysql551"
 	"github.com/go51/response551"
 	"github.com/go51/router551"
@@ -88,6 +89,8 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 	sidShort := sid[:10]
 	l.Debugf("%s SID: %s", sidShort, sid)
 
+	session := memcache551.New(&g.config.Framework.Session.Server, sid)
+
 	route := g.router.FindRouteByPathMatch(r.Method, r.URL.Path)
 
 	var data interface{} = nil
@@ -103,6 +106,7 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		c.SetLogger(l)
 		c.SetCookie(cookie)
 		c.SetDb(mysql)
+		c.SetSession(session)
 
 		action := route.Action()
 		data = action(c)

@@ -3,6 +3,7 @@ package gorai
 import (
 	"encoding/json"
 	"github.com/go51/log551"
+	"github.com/go51/memcache551"
 	"github.com/go51/mysql551"
 	"io/ioutil"
 	"os"
@@ -28,7 +29,8 @@ type ConfigWebServer struct {
 }
 
 type ConfigSession struct {
-	CookieKeyName string `json:"cookie_key_name"`
+	CookieKeyName string             `json:"cookie_key_name"`
+	Server        memcache551.Config `json:"server"`
 }
 
 var configInstance *Config
