@@ -6,6 +6,7 @@ import (
 	"github.com/go51/cookie551"
 	"github.com/go51/log551"
 	"github.com/go51/memcache551"
+	"github.com/go51/model551"
 	"github.com/go51/mysql551"
 	"github.com/go51/response551"
 	"github.com/go51/router551"
@@ -15,9 +16,10 @@ import (
 )
 
 type gorai struct {
-	config *Config
-	logger *log551.Log551
-	router *router551.Router
+	config       *Config
+	logger       *log551.Log551
+	router       *router551.Router
+	modelManager *model551.Model
 }
 
 var goraiInstance *gorai = nil
@@ -49,6 +51,10 @@ func (g *gorai) initialize() {
 	// Router
 	g.router = router551.Load()
 	g.logger.Information("Success! [Router551]")
+
+	// Router
+	g.modelManager = model551.Load()
+	g.logger.Information("Success! [Model551]")
 
 	g.logger.Information("--[ initialize gorai - END   ]--")
 }
@@ -145,4 +151,8 @@ func (g *gorai) sid(cookie *cookie551.Cookie) string {
 
 	return sid
 
+}
+
+func (g *gorai) ModelManager() *model551.Model {
+	return g.modelManager
 }
