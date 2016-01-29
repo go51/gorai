@@ -74,9 +74,16 @@ func (g *gorai) Run() {
 func webHandler() http.Handler {
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("/static/", staticResource)
 	mux.HandleFunc("/", rootFunc)
 
 	return mux
+}
+
+func staticResource(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Cache-Control-Max-Age", "10")
+	http.ServeFile(w, r, r.URL.Path[1:])
+
 }
 
 func rootFunc(w http.ResponseWriter, r *http.Request) {
