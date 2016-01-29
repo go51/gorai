@@ -11,7 +11,8 @@ import (
 )
 
 type Config struct {
-	Framework ConfigFramework `json:"framework"`
+	Framework   ConfigFramework `json:"framework"`
+	Application interface{}
 }
 
 type ConfigFramework struct {
@@ -35,7 +36,7 @@ type ConfigSession struct {
 
 var configInstance *Config
 
-func loadConfig() *Config {
+func loadConfig(appConfig interface{}) *Config {
 	if configInstance != nil {
 		return configInstance
 	}
@@ -46,6 +47,8 @@ func loadConfig() *Config {
 
 	configInstance = &Config{}
 	json.Unmarshal(file, &configInstance)
+
+	configInstance.Application = appConfig
 
 	return configInstance
 }
