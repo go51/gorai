@@ -24,21 +24,21 @@ type gorai struct {
 
 var goraiInstance *gorai = nil
 
-func Load() *gorai {
+func Load(appConfig ...interface{}) *gorai {
 	if goraiInstance != nil {
 		return goraiInstance
 	}
 
 	goraiInstance = &gorai{}
 
-	goraiInstance.initialize()
+	goraiInstance.initialize(appConfig[0])
 
 	return goraiInstance
 }
 
-func (g *gorai) initialize() {
+func (g *gorai) initialize(appConfig interface{}) {
 	// load config
-	g.config = loadConfig()
+	g.config = loadConfig(appConfig)
 
 	// Logger
 	g.logger = log551.New(&g.config.Framework.SystemLog)
