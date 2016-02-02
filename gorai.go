@@ -64,7 +64,7 @@ func (g *gorai) initialize(appConfig interface{}) {
 	g.logger.Information("Success! [Add auth models]")
 
 	// Auth
-	g.auth = auth551.Load(g.config.Framework.Auth)
+	g.auth = auth551.Load(&g.config.Framework.Auth)
 	g.logger.Information("Success! [Auth551]")
 
 	g.logger.Information("--[ initialize gorai - END   ]--")
