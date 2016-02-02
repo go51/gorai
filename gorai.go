@@ -120,6 +120,7 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		c.SetCookie(cookie)
 		c.SetDb(mysql)
 		c.SetSession(session)
+		c.SetModel(g.modelManager)
 
 		action := route.Action()
 		data = action(c)
@@ -158,8 +159,4 @@ func (g *gorai) sid(cookie *cookie551.Cookie) string {
 
 	return sid
 
-}
-
-func (g *gorai) ModelManager() *model551.Model {
-	return g.modelManager
 }
