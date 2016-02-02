@@ -2,6 +2,7 @@ package gorai
 
 import (
 	"encoding/json"
+	"github.com/go51/auth551"
 	"github.com/go51/log551"
 	"github.com/go51/memcache551"
 	"github.com/go51/mysql551"
@@ -20,6 +21,7 @@ type ConfigFramework struct {
 	SystemLog log551.Config   `json:"system_log"`
 	Session   ConfigSession   `json:"session"`
 	Database  mysql551.Config `json:"database"`
+	Auth      auth551.Config  `json:"auth"`
 }
 
 type ConfigWebServer struct {

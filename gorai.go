@@ -21,6 +21,7 @@ type gorai struct {
 	logger       *log551.Log551
 	router       *router551.Router
 	modelManager *model551.Model
+	auth         *auth551.Auth
 }
 
 var goraiInstance *gorai = nil
@@ -61,6 +62,10 @@ func (g *gorai) initialize(appConfig interface{}) {
 	g.modelManager.Add(auth551.NewUserModel, auth551.NewUserModelPointer)
 	g.modelManager.Add(auth551.NewUserTokenModel, auth551.NewUserTokenModelPointer)
 	g.logger.Information("Success! [Add auth models]")
+
+	// Auth
+	g.auth = auth551.Load(g.config.Framework.Auth)
+	g.logger.Information("Success! [Auth551]")
 
 	g.logger.Information("--[ initialize gorai - END   ]--")
 }
@@ -127,15 +132,16 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		c.SetDb(mysql)
 		c.SetSession(session)
 		c.SetModel(g.modelManager)
+		c.SetAuth(g.auth)
 
 		action := route.Action()
 		data = action(c)
 		response551.Response(w, r, data, route.PackageName(), route.Name())
 	} else {
-		l.Debugf("%s --[ Routing ]--", sidShort)
-		l.Debugf("%s Path: %s", sidShort, r.URL.Path)
-		l.Debugf("%s Neme: Route not found.", sidShort)
-		data = response551.Error(404, "Page, Action not found.")
+		l.Errorf("%s --[ Routing ]--", sidShort)
+		l.Errorf("%s Path: %s", sidShort, r.URL.Path)
+		l.Errorf("%s Neme: Route not found.", sidShort)
+		data = response551.Error(404, "Route not found.")
 		response551.Response(w, r, data, "", "")
 	}
 
