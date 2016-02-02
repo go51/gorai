@@ -2,6 +2,7 @@ package gorai
 
 import (
 	"github.com/facebookgo/grace/gracehttp"
+	"github.com/go51/auth551"
 	"github.com/go51/container551"
 	"github.com/go51/cookie551"
 	"github.com/go51/log551"
@@ -52,9 +53,14 @@ func (g *gorai) initialize(appConfig interface{}) {
 	g.router = router551.Load()
 	g.logger.Information("Success! [Router551]")
 
-	// Router
+	// ModelManager
 	g.modelManager = model551.Load()
 	g.logger.Information("Success! [Model551]")
+
+	// Add Auth Model
+	g.modelManager.Add(auth551.NewUserModel, auth551.NewUserModelPointer)
+	g.modelManager.Add(auth551.NewUserTokenModel, auth551.NewUserTokenModelPointer)
+	g.logger.Information("Success! [Add auth models]")
 
 	g.logger.Information("--[ initialize gorai - END   ]--")
 }
