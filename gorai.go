@@ -159,6 +159,10 @@ func (g *gorai) Router() *router551.Router {
 	return g.router
 }
 
+func (g *gorai) ModelManager() *model551.Model {
+	return g.modelManager
+}
+
 func (g *gorai) sid(cookie *cookie551.Cookie) string {
 	sid, err := cookie.Get(g.config.Framework.Session.CookieKeyName)
 	if err == nil {
