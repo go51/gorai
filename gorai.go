@@ -105,23 +105,24 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 	l.Open()
 	defer l.Close()
 
-	mysql := mysql551.New(&g.config.Framework.Database)
-
 	cookie := cookie551.New(w, r)
 
 	sid := g.sid(cookie)
-	sidShort := sid[:10]
-	l.Debugf("%s SID: %s", sidShort, sid)
-
+	l.Debugf("%s SID: %s", sid[:10], sid)
 	session := memcache551.New(&g.config.Framework.Session.Server, sid)
 
 	route := g.router.FindRouteByPathMatch(r.Method, r.URL.Path)
 
 	var data interface{} = nil
 	if route != nil {
-		l.Debugf("%s --[ Routing ]--", sidShort)
-		l.Debugf("%s Path: %s", sidShort, r.URL.Path)
-		l.Debugf("%s Neme: %s", sidShort, route.Name())
+		mysql := mysql551.New(&g.config.Framework.Database)
+		mysql.Open()
+		defer mysql.Close()
+
+		l.Debugf("%s --[ Routing ]--", sid[:10])
+		l.Debugf("%s Path: %s", sid[:10], r.URL.Path)
+		l.Debugf("%s Neme: %s", sid[:10], route.Name())
+
 		c := container551.New()
 		c.SetSID(sid)
 		c.SetResponseWriter(w)
@@ -138,9 +139,9 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		data = action(c)
 		response551.Response(w, r, data, route.PackageName(), route.Name())
 	} else {
-		l.Errorf("%s --[ Routing ]--", sidShort)
-		l.Errorf("%s Path: %s", sidShort, r.URL.Path)
-		l.Errorf("%s Neme: Route not found.", sidShort)
+		l.Errorf("%s --[ Routing ]--", sid[:10])
+		l.Errorf("%s Path: %s", sid[:10], r.URL.Path)
+		l.Errorf("%s Neme: Route not found.", sid[:10])
 		data = response551.Error(404, "Route not found.")
 		response551.Response(w, r, data, "", "")
 	}
