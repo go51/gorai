@@ -137,13 +137,13 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 
 		action := route.Action()
 		data = action(c)
-		response551.Response(w, r, data, route.PackageName(), route.Name())
+		response551.Response(w, r, data, route.PackageName(), route.Name(), c.User())
 	} else {
 		l.Errorf("%s --[ Routing ]--", sid[:10])
 		l.Errorf("%s Path: %s", sid[:10], r.URL.Path)
 		l.Errorf("%s Neme: Route not found.", sid[:10])
 		data = response551.Error(404, "Route not found.")
-		response551.Response(w, r, data, "", "")
+		response551.Response(w, r, data, "", "", nil)
 	}
 
 }
