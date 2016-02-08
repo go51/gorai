@@ -112,6 +112,7 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 	session := memcache551.New(&g.config.Framework.Session.Server, sid)
 
 	route := g.router.FindRouteByPathMatch(r.Method, r.URL.Path)
+	response551.UrlFunction = g.router.Url
 
 	var data interface{} = nil
 	if route != nil {
