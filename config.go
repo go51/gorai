@@ -17,11 +17,12 @@ type Config struct {
 }
 
 type ConfigFramework struct {
-	WebServer ConfigWebServer `json:"web_server"`
-	SystemLog log551.Config   `json:"system_log"`
-	Session   ConfigSession   `json:"session"`
-	Database  mysql551.Config `json:"database"`
-	Auth      auth551.Config  `json:"auth"`
+	WebServer  ConfigWebServer `json:"web_server"`
+	SystemLog  log551.Config   `json:"system_log"`
+	CommandLog log551.Config   `json:"command_log"`
+	Session    ConfigSession   `json:"session"`
+	Database   mysql551.Config `json:"database"`
+	Auth       auth551.Config  `json:"auth"`
 }
 
 type ConfigWebServer struct {
