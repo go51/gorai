@@ -13,6 +13,7 @@ import (
 	"github.com/go51/router551"
 	"github.com/go51/secure551"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -43,34 +44,43 @@ func (g *gorai) initialize(appConfig interface{}) {
 	g.config = loadConfig(appConfig)
 
 	// Logger
-	g.logger = log551.New(&g.config.Framework.SystemLog)
+	if isConsole() {
+		g.logger = log551.New(&g.config.Framework.CommandLog)
+	} else {
+		g.logger = log551.New(&g.config.Framework.SystemLog)
+	}
 	g.logger.Open()
 	defer g.logger.Close()
 
-	g.logger.Information("--[ initialize gorai - START ]--")
-	g.logger.Information("Success! [Log551]")
+	//g.logger.Information("--[ initialize gorai - START ]--")
+	//g.logger.Information("Success! [Log551]")
 
 	// Router
 	g.router = router551.Load()
-	g.logger.Information("Success! [Router551]")
+	//g.logger.Information("Success! [Router551]")
 
 	// ModelManager
 	g.modelManager = model551.Load()
-	g.logger.Information("Success! [Model551]")
+	//g.logger.Information("Success! [Model551]")
 
 	// Add Auth Model
 	g.modelManager.Add(auth551.NewUserModel, auth551.NewUserModelPointer)
 	g.modelManager.Add(auth551.NewUserTokenModel, auth551.NewUserTokenModelPointer)
-	g.logger.Information("Success! [Add auth models]")
+	//g.logger.Information("Success! [Add auth models]")
 
 	// Auth
 	g.auth = auth551.Load(&g.config.Framework.Auth)
-	g.logger.Information("Success! [Auth551]")
+	//g.logger.Information("Success! [Auth551]")
 
-	g.logger.Information("--[ initialize gorai - END   ]--")
+	//g.logger.Information("--[ initialize gorai - END   ]--")
 }
 
 func (g *gorai) Run() {
+	if isConsole() {
+		consoleHandler()
+		return
+	}
+
 	server := &http.Server{
 		Addr:         g.config.Framework.WebServer.Host + ":" + g.config.Framework.WebServer.Port,
 		Handler:      webHandler(),
@@ -80,6 +90,61 @@ func (g *gorai) Run() {
 	gracehttp.Serve(server)
 
 	g.logger.Close()
+}
+
+func isConsole() bool {
+	return len(os.Args) > 1
+}
+
+func consoleHandler() {
+
+	g := Load()
+
+	l := log551.New(&g.config.Framework.CommandLog)
+	l.Open()
+	defer l.Close()
+
+	sid := secure551.Hash()
+
+	// Routing
+	name := os.Args[1]
+	l.Debugf("%s [ Command ] %s", sid[:10], name)
+	route := g.router.FindRouteByName(router551.COMMAND.String(), name)
+	if route == nil {
+		l.Errorf("%s %s", sid[:10], "Action not found...")
+		return
+	}
+
+	// Options
+	optionArgs := os.Args[2:]
+	if len(optionArgs)%2 == 1 {
+		l.Errorf("%s %s", sid[:10], "Missing options.")
+	}
+	options := make(map[string]string, len(optionArgs)/2)
+	for i := 0; i < len(optionArgs); i += 2 {
+		options[optionArgs[i][1:]] = optionArgs[i+1]
+	}
+
+	mysql := mysql551.New(&g.config.Framework.Database)
+	mysql.Open()
+	defer mysql.Close()
+
+	session := memcache551.New(&g.config.Framework.Session.Server, sid)
+
+	c := container551.New()
+	c.SetSID(sid)
+	c.SetResponseWriter(nil)
+	c.SetRequest(nil)
+	c.SetLogger(l)
+	c.SetCookie(nil)
+	c.SetDb(mysql)
+	c.SetSession(session)
+	c.SetModel(g.modelManager)
+	c.SetCommandOptions(options)
+
+	action := route.Action()
+	action(c)
+
 }
 
 func webHandler() http.Handler {
@@ -128,7 +193,6 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		c.SetSID(sid)
 		c.SetResponseWriter(w)
 		c.SetRequest(r)
-		c.SetLogger(l)
 		c.SetLogger(l)
 		c.SetCookie(cookie)
 		c.SetDb(mysql)
