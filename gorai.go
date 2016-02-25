@@ -199,6 +199,7 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		c.SetSession(session)
 		c.SetModel(g.modelManager)
 		c.SetAuth(g.auth)
+		c.SetUrlFunc(g.router.Url)
 
 		action := route.Action()
 		data = action(c)
