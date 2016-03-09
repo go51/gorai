@@ -145,6 +145,11 @@ func consoleHandler() {
 	c.SetSession(session)
 	c.SetModel(g.modelManager)
 	c.SetCommandOptions(options)
+	if g.config.Framework.WebServerSSL.Port == "443" {
+		c.SetBaseURL("https://" + g.config.Framework.WebServerSSL.Host)
+	} else {
+		c.SetBaseURL("https://" + g.config.Framework.WebServerSSL.Host + ":" + g.config.Framework.WebServerSSL.Port)
+	}
 
 	action := route.Action()
 	action(c)
@@ -217,6 +222,11 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		c.SetModel(g.modelManager)
 		c.SetAuth(g.auth)
 		c.SetUrlFunc(g.router.Url)
+		if g.config.Framework.WebServerSSL.Port == "443" {
+			c.SetBaseURL("https://" + g.config.Framework.WebServerSSL.Host)
+		} else {
+			c.SetBaseURL("https://" + g.config.Framework.WebServerSSL.Host + ":" + g.config.Framework.WebServerSSL.Port)
+		}
 
 		action := route.Action()
 		data = action(c)
