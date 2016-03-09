@@ -1,6 +1,7 @@
 package gorai
 
 import (
+	"crypto/tls"
 	"github.com/facebookgo/grace/gracehttp"
 	"github.com/go51/auth551"
 	"github.com/go51/container551"
@@ -40,7 +41,6 @@ func Load(appConfig ...interface{}) *gorai {
 }
 
 func (g *gorai) initialize(appConfig interface{}) {
-	// load config
 	g.config = loadConfig(appConfig)
 
 	// Logger
@@ -52,27 +52,18 @@ func (g *gorai) initialize(appConfig interface{}) {
 	g.logger.Open()
 	defer g.logger.Close()
 
-	//g.logger.Information("--[ initialize gorai - START ]--")
-	//g.logger.Information("Success! [Log551]")
-
 	// Router
 	g.router = router551.Load()
-	//g.logger.Information("Success! [Router551]")
 
 	// ModelManager
 	g.modelManager = model551.Load()
-	//g.logger.Information("Success! [Model551]")
 
 	// Add Auth Model
 	g.modelManager.Add(auth551.NewUserModel, auth551.NewUserModelPointer)
 	g.modelManager.Add(auth551.NewUserTokenModel, auth551.NewUserTokenModelPointer)
-	//g.logger.Information("Success! [Add auth models]")
 
 	// Auth
 	g.auth = auth551.Load(&g.config.Framework.Auth)
-	//g.logger.Information("Success! [Auth551]")
-
-	//g.logger.Information("--[ initialize gorai - END   ]--")
 }
 
 func (g *gorai) Run() {
@@ -81,15 +72,28 @@ func (g *gorai) Run() {
 		return
 	}
 
+	cer, err := tls.LoadX509KeyPair("./ssl/server.crt", "./ssl/server.key")
+	if err != nil {
+		panic(err)
+	}
+
+	config := &tls.Config{Certificates: []tls.Certificate{cer}}
+
 	server := &http.Server{
 		Addr:         g.config.Framework.WebServer.Host + ":" + g.config.Framework.WebServer.Port,
-		Handler:      webHandler(),
+		Handler:      webReWriteHandler(),
 		ReadTimeout:  g.config.Framework.WebServer.ReadTimeout * time.Second,
 		WriteTimeout: g.config.Framework.WebServer.WriteTimeout * time.Second,
 	}
-	gracehttp.Serve(server)
+	serverSSL := &http.Server{
+		Addr:         g.config.Framework.WebServerSSL.Host + ":" + g.config.Framework.WebServerSSL.Port,
+		Handler:      webHandler(),
+		ReadTimeout:  g.config.Framework.WebServerSSL.ReadTimeout * time.Second,
+		WriteTimeout: g.config.Framework.WebServerSSL.WriteTimeout * time.Second,
+		TLSConfig:    config,
+	}
 
-	g.logger.Close()
+	gracehttp.Serve(server, serverSSL)
 }
 
 func isConsole() bool {
@@ -152,6 +156,19 @@ func webHandler() http.Handler {
 
 	mux.HandleFunc("/static/", staticResource)
 	mux.HandleFunc("/", rootFunc)
+
+	return mux
+}
+
+func webReWriteHandler() http.Handler {
+	mux := http.NewServeMux()
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+
+		g := Load()
+
+		http.Redirect(w, r, "https://"+g.config.Framework.WebServerSSL.Host+":"+g.config.Framework.WebServerSSL.Port+r.URL.Path, http.StatusMovedPermanently)
+	})
 
 	return mux
 }
