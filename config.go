@@ -17,13 +17,13 @@ type Config struct {
 }
 
 type ConfigFramework struct {
-	WebServer    ConfigWebServer `json:"web_server"`
-	WebServerSSL ConfigWebServer `json:"web_server_ssl"`
-	SystemLog    log551.Config   `json:"system_log"`
-	CommandLog   log551.Config   `json:"command_log"`
-	Session      ConfigSession   `json:"session"`
-	Database     mysql551.Config `json:"database"`
-	Auth         auth551.Config  `json:"auth"`
+	WebServer    ConfigWebServer    `json:"web_server"`
+	WebServerSSL ConfigWebServerSSL `json:"web_server_ssl"`
+	SystemLog    log551.Config      `json:"system_log"`
+	CommandLog   log551.Config      `json:"command_log"`
+	Session      ConfigSession      `json:"session"`
+	Database     mysql551.Config    `json:"database"`
+	Auth         auth551.Config     `json:"auth"`
 }
 
 type ConfigWebServer struct {
@@ -31,6 +31,15 @@ type ConfigWebServer struct {
 	Port         string        `json:"port"`
 	ReadTimeout  time.Duration `json:"read_timeout"`
 	WriteTimeout time.Duration `json:"write_timeout"`
+}
+
+type ConfigWebServerSSL struct {
+	Host         string        `json:"host"`
+	Port         string        `json:"port"`
+	ReadTimeout  time.Duration `json:"read_timeout"`
+	WriteTimeout time.Duration `json:"write_timeout"`
+	CtrFile      string        `json:"crt_file"`
+	KeyFile      string        `json:"key_file"`
 }
 
 type ConfigSession struct {
