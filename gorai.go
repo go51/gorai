@@ -72,7 +72,7 @@ func (g *gorai) Run() {
 		return
 	}
 
-	cer, err := tls.LoadX509KeyPair("./ssl/server.crt", "./ssl/server.key")
+	cer, err := tls.LoadX509KeyPair(g.config.Framework.WebServerSSL.CtrFile, g.config.Framework.WebServerSSL.KeyFile)
 	if err != nil {
 		panic(err)
 	}
