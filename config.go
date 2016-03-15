@@ -12,8 +12,8 @@ import (
 )
 
 type Config struct {
-	Framework   ConfigFramework `json:"framework"`
-	Application interface{}
+	Framework   ConfigFramework   `json:"framework"`
+	Application ConfigApplication `json:"application"`
 }
 
 type ConfigFramework struct {
@@ -45,6 +45,11 @@ type ConfigWebServerSSL struct {
 type ConfigSession struct {
 	CookieKeyName string             `json:"cookie_key_name"`
 	Server        memcache551.Config `json:"server"`
+}
+
+type ConfigApplication struct {
+	Name                      string `json:"name"`
+	GoogleAnalyticsTrackingId string `json:"google_analytics_tracking_id"`
 }
 
 var configInstance *Config
