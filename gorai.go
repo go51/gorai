@@ -28,20 +28,20 @@ type gorai struct {
 
 var goraiInstance *gorai = nil
 
-func Load(appConfig ...interface{}) *gorai {
+func Load() *gorai {
 	if goraiInstance != nil {
 		return goraiInstance
 	}
 
 	goraiInstance = &gorai{}
 
-	goraiInstance.initialize(appConfig[0])
+	goraiInstance.initialize()
 
 	return goraiInstance
 }
 
-func (g *gorai) initialize(appConfig interface{}) {
-	g.config = loadConfig(appConfig)
+func (g *gorai) initialize() {
+	g.config = loadConfig()
 
 	// Logger
 	if isConsole() {
@@ -230,13 +230,13 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 
 		action := route.Action()
 		data = action(c)
-		response551.Response(w, r, data, route.PackageName(), route.Name(), c.User())
+		response551.Response(w, r, data, route.PackageName(), route.Name(), c.User(), g.config.Application)
 	} else {
 		l.Errorf("%s --[ Routing ]--", sid[:10])
 		l.Errorf("%s Path: %s", sid[:10], r.URL.Path)
 		l.Errorf("%s Neme: Route not found.", sid[:10])
 		data = response551.Error(404, "Route not found.")
-		response551.Response(w, r, data, "", "", nil)
+		response551.Response(w, r, data, "", "", nil, g.config.Application)
 	}
 
 }
