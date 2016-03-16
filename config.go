@@ -54,7 +54,7 @@ type ConfigApplication struct {
 
 var configInstance *Config
 
-func loadConfig(appConfig interface{}) *Config {
+func loadConfig() *Config {
 	if configInstance != nil {
 		return configInstance
 	}
@@ -65,8 +65,6 @@ func loadConfig(appConfig interface{}) *Config {
 
 	configInstance = &Config{}
 	json.Unmarshal(file, &configInstance)
-
-	configInstance.Application = appConfig
 
 	return configInstance
 }
