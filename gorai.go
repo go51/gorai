@@ -232,9 +232,11 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		data = action(c)
 		response551.Response(w, r, data, route.PackageName(), route.Name(), c.User(), g.config.Application)
 	} else {
-		l.Errorf("%s --[ Routing ]--", sid[:10])
-		l.Errorf("%s Path: %s", sid[:10], r.URL.Path)
-		l.Errorf("%s Neme: Route not found.", sid[:10])
+		l.Errorf("%s --[ Route not found ]--", sid[:10])
+		l.Errorf("%s UA:     %s", sid[:10], r.UserAgent())
+		l.Errorf("%s Method: %s", sid[:10], r.Method)
+		l.Errorf("%s Path:   %s", sid[:10], r.URL.Path)
+		l.Errorf("%s --[/Route not found ]--", sid[:10])
 		data = response551.Error(404, "Route not found.")
 		response551.Response(w, r, data, "", "", nil, g.config.Application)
 	}
