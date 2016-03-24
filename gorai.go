@@ -222,11 +222,13 @@ func rootFunc(w http.ResponseWriter, r *http.Request) {
 		c.SetModel(g.modelManager)
 		c.SetAuth(g.auth)
 		c.SetUrlFunc(g.router.Url)
-		if g.config.Framework.WebServerSSL.Port == "443" {
-			c.SetBaseURL("https://" + g.config.Framework.WebServerSSL.Host)
-		} else {
-			c.SetBaseURL("https://" + g.config.Framework.WebServerSSL.Host + ":" + g.config.Framework.WebServerSSL.Port)
+
+		baseUrl := "https://" + g.config.Framework.WebServerSSL.Host
+		if g.config.Framework.WebServerSSL.Port != "443" {
+			baseUrl = baseUrl + ":" + g.config.Framework.WebServerSSL.Port
 		}
+		c.SetBaseURL(baseUrl)
+		response551.BaseUrl = baseUrl
 
 		action := route.Action()
 		data = action(c)
